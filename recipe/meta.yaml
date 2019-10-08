@@ -1,0 +1,37 @@
+package:
+  name: bm3d
+  version: 0.1.0
+
+source:
+  git_url: https://github.com/gfacciol/bm3d
+  git_tag: master
+  patches:
+    - 0001-Link-fftw-statically.patch
+    - 0002-Install-binary-and-library.patch
+
+build:
+  number: 4
+  ignore_run_exports:
+    - fftw
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+  host:
+    - fftw
+    - libpng
+    - libtiff
+    - jpeg
+  run:
+    - libpng
+    - libtiff
+    - jpeg
+
+
+about:
+  home: https://github.com/gfacciol/bm3d
+  license: GPLv3
+  summary: 'bm3d'
