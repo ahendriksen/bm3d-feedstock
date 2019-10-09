@@ -8,9 +8,11 @@ source:
   patches:
     - 0001-Link-fftw-statically.patch
     - 0002-Install-binary-and-library.patch
+    - 0003-Fix-shared-library-sources.patch
+    - 0004-Link-fftwf-with-Bsymbolic.patch
 
 build:
-  number: 4
+  number: 6
   ignore_run_exports:
     - fftw
 

@@ -1,0 +1,52 @@
+From 239d909d14499c8b430ec7e42253025cb3500734 Mon Sep 17 00:00:00 2001
+From: Allard Hendriksen <allard@allard-dell-xps-9560>
+Date: Tue, 8 Oct 2019 17:14:58 +0200
+Subject: [PATCH] Fix shared library sources
+
+---
+ CMakeLists.txt | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4dc7ff5..64470a4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,7 @@
+-cmake_minimum_required(VERSION 3.0)
++cmake_minimum_required(VERSION 3.5)
+ project(bm3d VERSION 0.1.0)
+ include(GNUInstallDirs)
++include(CMakePackageConfigHelpers)
+ 
+ # The build type "Release" adds some optimizations
+ if (NOT CMAKE_BUILD_TYPE)
+@@ -55,13 +56,24 @@ add_executable(bm3d-bin ${SOURCE_FILES})
+ set_target_properties(bm3d-bin PROPERTIES OUTPUT_NAME bm3d)
+ 
+ add_library(bm3d SHARED
+-  bm3d.cpp
++  bm3d.cpp lib_transforms.cpp utilities.cpp iio.c
++  lib_transforms.h utilities.h bm3d.h
+ )
++
+ set_target_properties(bm3d PROPERTIES VERSION ${PROJECT_VERSION})
+ set_target_properties(bm3d PROPERTIES SOVERSION 0)
+ set_target_properties(bm3d PROPERTIES PUBLIC_HEADER bm3d.h)
+ 
++
+ install(TARGETS bm3d bm3d-bin
++  EXPORT "${PROJECT_NAME}Config"
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
++)
++
++install(EXPORT "${PROJECT_NAME}Config"
++  NAMESPACE "${PROJECT_NAME}_"
++  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake)
++
++export(TARGETS ${PROJECT_NAME} FILE "${PROJECT_NAME}Config.cmake")
+-- 
+2.20.1
+

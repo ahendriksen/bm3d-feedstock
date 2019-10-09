@@ -1,0 +1,60 @@
+From 83cfa80722e2554b2d24c71bc11f0cdd990d2a96 Mon Sep 17 00:00:00 2001
+From: Allard Hendriksen <allard@allard-dell-xps-9560>
+Date: Wed, 9 Oct 2019 09:33:52 +0200
+Subject: [PATCH] Link fftwf with -Bsymbolic
+
+---
+ CMakeLists.txt | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 64470a4..5404331 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -43,7 +43,6 @@ find_library (FFTWF_LIBRARIES NAMES libfftw3f.a)
+ 
+ 
+ include_directories (PUBLIC ${EIGEN3_INCLUDE_DIR} PUBLIC ${TIFF_INCLUDE_DIR} PUBLIC ${JPEG_INCLUDE_DIR} PUBLIC ${PNG_INCLUDE_DIRS} PUBLIC ${ALGLIB_INCLUDE_DIR} PUBLIC ${FFTW_INCLUDES})
+-link_libraries (${TIFF_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${FFTWF_LIBRARIES})
+ 
+ set(SOURCE_FILES
+     bm3d.cpp           iio.c              lib_transforms.h   utilities.h
+@@ -52,19 +51,34 @@ set(SOURCE_FILES
+ 
+ set_property(SOURCE iio.c PROPERTY COMPILE_FLAGS "-Wno-unused-variable -Wno-unused-parameter -Wno-pointer-sign -Wno-parentheses -Wno-deprecated-declarations -Wno-unused-function")
+ 
++###############################################################################
++#                                 BM3D Binary                                 #
++###############################################################################
++
+ add_executable(bm3d-bin ${SOURCE_FILES})
+ set_target_properties(bm3d-bin PROPERTIES OUTPUT_NAME bm3d)
++target_link_libraries(bm3d-bin LINK_PUBLIC ${TIFF_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES})
++target_link_libraries(bm3d-bin LINK_PRIVATE ${FFTWF_LIBRARIES})
+ 
++###############################################################################
++#                                 BM3D Library                                #
++###############################################################################
+ add_library(bm3d SHARED
+   bm3d.cpp lib_transforms.cpp utilities.cpp iio.c
+   lib_transforms.h utilities.h bm3d.h
+ )
+ 
++target_link_libraries(bm3d LINK_PUBLIC ${TIFF_LIBRARIES} ${JPEG_LIBRARIES} ${PNG_LIBRARIES})
++target_link_libraries(bm3d LINK_PRIVATE -Wl,-Bsymbolic ${FFTWF_LIBRARIES})
++
++
+ set_target_properties(bm3d PROPERTIES VERSION ${PROJECT_VERSION})
+ set_target_properties(bm3d PROPERTIES SOVERSION 0)
+ set_target_properties(bm3d PROPERTIES PUBLIC_HEADER bm3d.h)
+ 
+-
++###############################################################################
++#                                 Installation                                #
++###############################################################################
+ install(TARGETS bm3d bm3d-bin
+   EXPORT "${PROJECT_NAME}Config"
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+-- 
+2.20.1
+
